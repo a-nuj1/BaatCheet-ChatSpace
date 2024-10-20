@@ -8,12 +8,14 @@ import {
   Stack,
   Avatar,
   IconButton,
+  InputAdornment,
 } from "@mui/material";
 
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { VisuallyHiddenInput } from "../components/Styles/StyledComponents";
 
 import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { usernameValidator } from "../utils/validators";
 import { bgColrGrad } from "../constants/colors";
 
@@ -22,6 +24,11 @@ function Login() {
   const name = useInputValidation("");
   const bio = useInputValidation("");
   const username = useInputValidation("", usernameValidator);
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   // const password = useStrongPassword(); to make password strong use useStrongPassword hook
 
@@ -108,9 +115,22 @@ function Login() {
                   required
                   fullWidth
                   label="Password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password.value}
                   onChange={password.changeHandler}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
 
                 <Button
@@ -242,6 +262,19 @@ function Login() {
                   type="password"
                   value={password.value}
                   onChange={password.changeHandler}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 {/* to make password strong */}
 
