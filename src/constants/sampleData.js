@@ -16,6 +16,196 @@ export const sampleChats = [
     groupChat: true,
     members: ["1", "2"],
   },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "susy ",
+    _id: "3",
+    groupChat: true,
+    members: ["1", "2",'3'],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "remo ",
+    _id: "4",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "5",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "6",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "7",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "8",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "9",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "10",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "11",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "12",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "13",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "14",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "15",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "16",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "17",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "18",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "19",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "20",
+    groupChat: true,
+    members: ["1", "2"],
+  },
+  {
+    avatar: [
+      "https://randomuser.me/api/portraits",
+     
+    ],
+    name: "John ",
+    _id: "21",
+    groupChat: true,
+    members: ["1", "2"],
+  },
 ];
 
 

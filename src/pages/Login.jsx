@@ -15,6 +15,7 @@ import { VisuallyHiddenInput } from "../components/Styles/StyledComponents";
 
 import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
 import { usernameValidator } from "../utils/validators";
+import { bgColrGrad } from "../constants/colors";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -47,8 +48,7 @@ function Login() {
   return (
     <div
     style={{
-      backgroundImage:
-        "linear-gradient(to bottom, rgb(208 155 215 / 80%), rgb(128 209 125 / 50%)), url('https://images.unsplash.com/photo-1496205856088-91b021308c54?q=80&w=1120&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+      backgroundImage:bgColrGrad,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       minHeight: '100vh', 
