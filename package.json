@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.3",
     "@mui/material": "^6.1.3",
+    "@mui/x-data-grid": "^7.21.0",
     "6pp": "^1.2.16",
     "chart.js": "^4.4.4",
     "moment": "^2.30.1",
