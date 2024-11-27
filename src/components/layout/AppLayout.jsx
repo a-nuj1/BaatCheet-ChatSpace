@@ -2,16 +2,23 @@
 import React from "react";
 import Header from "./Header";
 import Title from "../shared/Title";
-import { Grid } from "@mui/material";
+import { Grid , Skeleton} from "@mui/material";
 import Chatlist from "../specific/Chatlist";
 import { sampleChats } from "../../constants/sampleData";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/Profile";
+import { useMyChatsQuery } from "../../redux/api/api";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
       const params = useParams();
       const chatId = params.chatId;
+
+      const {isLoading, data, isError, error, refetch} = useMyChatsQuery();
+
+
+      // console.log(data);
+
 
       const handleDeleteChat = (e, _id, groupChat) => {
         e.preventDefault();
@@ -34,18 +41,14 @@ const AppLayout = () => (WrappedComponent) => {
             height="100%"
             overflow="hidden"
           >
-            <Chatlist 
-            chats={sampleChats} 
-            chatId={chatId}
-            handleDeleteChat={handleDeleteChat}
-            // newMessagesAlert={[
-            //   {
-            //     chatId,
-            //     count:4
-            //   }
-            // ]}
-            // onlineUsers={['1','2','3']}
-            />
+            {
+              isLoading ? (<Skeleton/>) : 
+              <Chatlist 
+              chats={data?.chats} 
+              chatId={chatId}
+              handleDeleteChat={handleDeleteChat}
+              />
+            }
           </Grid>
 
           {/* Second Section (Main Content) */}

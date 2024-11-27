@@ -18,6 +18,11 @@ import { useFileHandler, useInputValidation, useStrongPassword } from "6pp";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { usernameValidator } from "../utils/validators";
 import { bgColrGrad } from "../constants/colors";
+import axios from "axios";
+import { server } from "../constants/config";
+import { useDispatch } from "react-redux";
+import { userExists } from "../redux/reducers/auth";
+import toast from "react-hot-toast";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -35,34 +40,72 @@ function Login() {
   const password = useInputValidation("");
 
   const avatar = useFileHandler("single");
+  const dispatch = useDispatch();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("login", username.value, password.value);
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        config
+      );
+      dispatch(userExists(data.user));
+      toast.success(data.message);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Something went wrong");
+    }
+
+    // console.log("login", username.value, password.value);
   };
-  const handleSignUp = (e) => {
+
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    console.log(
-      "signup",
-      name.value,
-      bio.value,
-      username.value,
-      password.value,
-      avatar.file
-    );
+    const formData = new FormData();
+    formData.append("name", name.value);
+    formData.append("bio", bio.value);
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+    formData.append("avatar", avatar.file);
+
+    try {
+      const { data } = await axios.post(`${server}/api/v1/user/new`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      
+      dispatch(userExists(true))
+      toast.success(data.message );
+  
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
     <div
-    style={{
-      backgroundImage:bgColrGrad,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      minHeight: '100vh', 
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
+      style={{
+        backgroundImage: bgColrGrad,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
       <Container
         component={"main"}
@@ -79,7 +122,7 @@ function Login() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            backgroundColor: ' #F5F5F5',
+            backgroundColor: " #F5F5F5",
           }}
         >
           {isLogin ? (

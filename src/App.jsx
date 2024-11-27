@@ -1,7 +1,13 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import axios from "axios";
+import {server} from "./constants/config"
+import { useDispatch, useSelector } from "react-redux";
+
+import {Toaster} from "react-hot-toast"
 import ProtectRoute from "./components/auth/ProtectRoute";
 import { LayoutLoader } from "./components/layout/Loaders";
+import { userExists, userNotExists } from "./redux/reducers/auth";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -14,10 +20,27 @@ const UserManagement = lazy(()=>import("./pages/admin/UserManagement"));
 const ChatManagement = lazy(()=>import("./pages/admin/ChatManagement"));
 const MessageManagement = lazy(()=>import("./pages/admin/MessageManagement"))
 
-let user = true;
 
 function App() {
-  return (
+  const {user, loader} = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    axios.get(`${server}/api/v1/user/profile`,{
+      withCredentials:true
+    })
+    .then(({data}) => dispatch(userExists(data.user)) )
+    .catch((err) => dispatch(userNotExists()));
+  }, [dispatch])
+
+
+
+
+  return loader 
+  ? 
+  (<LayoutLoader></LayoutLoader>) 
+  :
+  (
     <Router>
       <Suspense fallback={<LayoutLoader/>}>
         <Routes>
@@ -47,6 +70,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <Toaster position="top-center" />
+
     </Router>
   );
 }
