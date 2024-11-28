@@ -1,11 +1,19 @@
 import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
 import React, { memo } from "react";
+import { transformUrl } from "../../lib/features";
 
-function UserItem({ user, handler, handlerIsLoading, isAdded = false, styling = {}}) {
-  const { name, email, _id } = user;
+
+function UserItem({
+  user,
+  handler,
+  handlerIsLoading,
+  isAdded = false,
+  styling = {},
+}) {
+  const { name, _id, avatar} = user;
   return (
-    <ListItem >
+    <ListItem>
       <Stack
         direction={"row"}
         alignItems={"center"}
@@ -13,7 +21,7 @@ function UserItem({ user, handler, handlerIsLoading, isAdded = false, styling = 
         spacing={"1rem"}
         {...styling}
       >
-        <Avatar />
+        <Avatar src= {transformUrl(avatar)}/>
         <Typography
           variant={"body1"}
           sx={{
@@ -23,23 +31,22 @@ function UserItem({ user, handler, handlerIsLoading, isAdded = false, styling = 
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            width: '100%',
+            width: "100%",
           }}
         >
           {name}
         </Typography>
-        <IconButton 
+        <IconButton
           size="small"
           sx={{
-            bgcolor: isAdded?"error.main": "primary.main",
+            bgcolor: isAdded ? "error.main" : "primary.main",
             color: "white",
-            "&:hover": { bgcolor:isAdded?"error.dark": "primary.dark" },
+            "&:hover": { bgcolor: isAdded ? "error.dark" : "primary.dark" },
           }}
-        
-          onClick={() => handler(_id)} disabled={handlerIsLoading}>
-            {
-              isAdded ? <RemoveIcon />: <AddIcon />
-            }
+          onClick={() => handler(_id)}
+          disabled={handlerIsLoading}
+        >
+          {isAdded ? <RemoveIcon /> : <AddIcon />}
           {/* <AddIcon /> */}
         </IconButton>
       </Stack>

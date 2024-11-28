@@ -1,23 +1,34 @@
 /* eslint-disable react/display-name */
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 import Title from "../shared/Title";
-import { Grid , Skeleton} from "@mui/material";
+import { Drawer, Grid , Skeleton} from "@mui/material";
 import Chatlist from "../specific/Chatlist";
 import { sampleChats } from "../../constants/sampleData";
 import { useParams } from "react-router-dom";
 import Profile from "../specific/Profile";
 import { useMyChatsQuery } from "../../redux/api/api";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsMobileMenu } from "../../redux/reducers/extra";
+import useErrors from "../../hooks/hook";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
       const params = useParams();
       const chatId = params.chatId;
+      const dispatch = useDispatch();
 
+      const {isMobileMenu} = useSelector((state)=>state.extra)
+      
       const {isLoading, data, isError, error, refetch} = useMyChatsQuery();
 
+      useErrors([{isError, error}]);
+      
 
-      // console.log(data);
+
+      const handleMobileMenuClose = () => {
+        dispatch(setIsMobileMenu(false))
+      };
 
 
       const handleDeleteChat = (e, _id, groupChat) => {
@@ -30,6 +41,19 @@ const AppLayout = () => (WrappedComponent) => {
       <>
         <Title />
         <Header />
+
+        {isLoading ? <Skeleton/> : (
+          <Drawer open = {isMobileMenu} onClose={handleMobileMenuClose}>
+            <Chatlist 
+              w = '70vw'
+              chats={data?.chats} 
+              chatId={chatId}
+              handleDeleteChat={handleDeleteChat}
+              />
+          </Drawer>
+        )}
+
+
         <Grid container height={"calc(100vh - 4rem)"} spacing={0}>
           {/* First Section */}
           <Grid
@@ -43,12 +67,12 @@ const AppLayout = () => (WrappedComponent) => {
           >
             {
               isLoading ? (<Skeleton/>) : 
-              <Chatlist 
+              (<Chatlist 
               chats={data?.chats} 
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
               />
-            }
+            )}
           </Grid>
 
           {/* Second Section (Main Content) */}
