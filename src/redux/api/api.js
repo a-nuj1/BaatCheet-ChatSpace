@@ -22,7 +22,17 @@ const api = createApi({
                 credentials: "include",
             }),
             providesTags: ["User"],
-        })
+        }),
+
+        senFriendRequest: builder.mutation({
+            query: (id) => ({
+                url: '/user/sendrequest',
+                method: "PUT",
+                credentials: "include",
+                body: id,
+            }),
+            invalidatesTags: ["User"],
+        }),
         
     }),
 
@@ -32,4 +42,8 @@ const api = createApi({
 
 export default api;
 
-export const { useMyChatsQuery, useLazySearchUserQuery } = api;
+export const { 
+    useMyChatsQuery, 
+    useLazySearchUserQuery,
+    useSenFriendRequestMutation
+ } = api;

@@ -10,7 +10,7 @@ import Profile from "../specific/Profile";
 import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobileMenu } from "../../redux/reducers/extra";
-import useErrors from "../../hooks/hook";
+import {useErrors} from "../../hooks/hook";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
@@ -19,6 +19,8 @@ const AppLayout = () => (WrappedComponent) => {
       const dispatch = useDispatch();
 
       const {isMobileMenu} = useSelector((state)=>state.extra)
+      const {user} = useSelector((state)=>state.auth)
+
       
       const {isLoading, data, isError, error, refetch} = useMyChatsQuery();
 
@@ -102,7 +104,7 @@ const AppLayout = () => (WrappedComponent) => {
             }}
             overflow="hidden"
           >
-            <Profile />
+            <Profile user = {user} />
           </Grid>
         </Grid>
       </>

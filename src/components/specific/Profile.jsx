@@ -5,13 +5,15 @@ import {
   AlternateEmail as UserNameIcon,
   CalendarMonth as CalendarIcon,
 } from "@mui/icons-material";
+import { transformUrl } from "../../lib/features";
 
 import moment from "moment";
 
-function Profile() {
+function Profile({user}) {
   return (
     <Stack spacing={"2rem"} direction={"column"} alignItems={"center"}>
       <Avatar
+      src={transformUrl(user?.avatar?.url)}
         sx={{
           width: "10rem",
           height: "10rem",
@@ -22,23 +24,23 @@ function Profile() {
       />
       <ProfileCard 
         heading={"bio"} 
-        text={"sada haq ethe rakh"} 
+        text={user?.bio} 
        />
 
       <ProfileCard
         heading={"Username"}
-        text={"anujgupta"}
+        text={user?.username}
         Icon={<UserNameIcon />}
       />
       <ProfileCard
         heading={"Name"}
-        text={"Anuj Kumar Gupta"}
+        text={user?.name}
         Icon={<FaceIcon />}
       />
 
       <ProfileCard
         heading={"Joined"}
-        text={moment("2024-08-06T18:30:00.000Z").fromNow()}
+        text={moment(user?.createdAt).fromNow()}
         Icon={<CalendarIcon />}
       />
     </Stack>
