@@ -8,6 +8,7 @@ import {Toaster} from "react-hot-toast"
 import ProtectRoute from "./components/auth/ProtectRoute";
 import { LayoutLoader } from "./components/layout/Loaders";
 import { userExists, userNotExists } from "./redux/reducers/auth";
+import { SocketProvider } from "./socket";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -44,7 +45,11 @@ function App() {
     <Router>
       <Suspense fallback={<LayoutLoader/>}>
         <Routes>
-          <Route element={<ProtectRoute user={user} />}>
+          {/* importing socket provider helps to provide the socket to the below 3 routes  */}
+          
+          <Route element={<SocketProvider>
+            <ProtectRoute user={user} />
+          </SocketProvider>}>
             <Route path="/" element={<Home />} />
             <Route path="/chat/:chatId" element={<Chat />} />
             <Route path="/groups" element={<Groups />} />

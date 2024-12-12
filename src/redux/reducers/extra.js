@@ -7,7 +7,7 @@ const initialState = {
     isNotification: false,
     isMobileMenu: false,
     isSearch: false,
-    ifFileMenu: false,
+    isFileMenu: false,
     isDeleteMenu: false,
     uploadingLoader: false,
     selectedDelChats: {
@@ -37,7 +37,7 @@ const extraSlice = createSlice({
             state.isSearch = action.payload;
         },
         setIsFileMenu: (state, action)=>{
-            state.ifFileMenu = action.payload;
+            state.isFileMenu = action.payload;
         },
         setIsDeleteMenu: (state, action)=>{
             state.isDeleteMenu = action.payload;

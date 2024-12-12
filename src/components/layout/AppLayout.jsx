@@ -1,8 +1,8 @@
 /* eslint-disable react/display-name */
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import Header from "./Header";
 import Title from "../shared/Title";
-import { Drawer, Grid , Skeleton} from "@mui/material";
+import { Drawer, Grid, Skeleton } from "@mui/material";
 import Chatlist from "../specific/Chatlist";
 import { sampleChats } from "../../constants/sampleData";
 import { useParams } from "react-router-dom";
@@ -10,51 +10,91 @@ import Profile from "../specific/Profile";
 import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsMobileMenu } from "../../redux/reducers/extra";
-import {useErrors} from "../../hooks/hook";
+import { useErrors, useSocketEvents } from "../../hooks/hook";
+import { getSocket } from "../../socket";
+import {
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+} from "../../constants/events";
+import {
+  incrementNotificationCnt,
+  setNewMessagesAlert,
+} from "../../redux/reducers/chat";
+import { getOrSaveFromLocalStorage } from "../../lib/features";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
-      const params = useParams();
-      const chatId = params.chatId;
-      const dispatch = useDispatch();
+    const params = useParams();
+    const chatId = params.chatId;
+    const dispatch = useDispatch();
 
-      const {isMobileMenu} = useSelector((state)=>state.extra)
-      const {user} = useSelector((state)=>state.auth)
+    const socket = getSocket();
+    // console.log(socket.id);
 
-      
-      const {isLoading, data, isError, error, refetch} = useMyChatsQuery();
+    const { isMobileMenu } = useSelector((state) => state.extra);
+    const { user } = useSelector((state) => state.auth);
 
-      useErrors([{isError, error}]);
-      
+    const { newMessagesAlert } = useSelector((state) => state.chat);
+
+    const { isLoading, data, isError, error } = useMyChatsQuery();
+
+    useErrors([{ isError, error }]);
+
+    useEffect(()=>{
+      getOrSaveFromLocalStorage({key:NEW_MESSAGE_ALERT, value:newMessagesAlert});
+    },[newMessagesAlert])
 
 
-      const handleMobileMenuClose = () => {
-        dispatch(setIsMobileMenu(false))
-      };
+
+    const handleMobileMenuClose = () => {
+      dispatch(setIsMobileMenu(false));
+    };
+
+    const handleDeleteChat = (e, _id, groupChat) => {
+      e.preventDefault();
+      console.log("Deleted Chat", _id, groupChat);
+    };
+
+    
 
 
-      const handleDeleteChat = (e, _id, groupChat) => {
-        e.preventDefault();
-        console.log("Deleted Chat", _id, groupChat);
-      }
+    const newMessageAlertHandler = useCallback(
+      (data) => {
+        if (data.chatId === chatId) return;
+        dispatch(setNewMessagesAlert(data));
+      },
+      [chatId]
+    );
 
+    const newRequestHandler = useCallback(() => {
+      dispatch(incrementNotificationCnt());
+    }, [dispatch]);
+
+    const eventHanlders = {
+      [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
+      [NEW_REQUEST]: newRequestHandler,
+    };
+    useSocketEvents(socket, eventHanlders);
 
     return (
       <>
         <Title />
         <Header />
 
-        {isLoading ? <Skeleton/> : (
-          <Drawer open = {isMobileMenu} onClose={handleMobileMenuClose}>
-            <Chatlist 
-              w = '70vw'
-              chats={data?.chats} 
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          <Drawer open={isMobileMenu} onClose={handleMobileMenuClose}>
+            <Chatlist
+              w="70vw"
+              chats={data?.chats}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
-              />
+              newMessagesAlert={newMessagesAlert}
+            />
           </Drawer>
         )}
-
 
         <Grid container height={"calc(100vh - 4rem)"} spacing={0}>
           {/* First Section */}
@@ -67,12 +107,14 @@ const AppLayout = () => (WrappedComponent) => {
             height="100%"
             overflow="hidden"
           >
-            {
-              isLoading ? (<Skeleton/>) : 
-              (<Chatlist 
-              chats={data?.chats} 
-              chatId={chatId}
-              handleDeleteChat={handleDeleteChat}
+            {isLoading ? (
+              <Skeleton />
+            ) : (
+              <Chatlist
+                chats={data?.chats}
+                chatId={chatId}
+                handleDeleteChat={handleDeleteChat}
+                newMessagesAlert={newMessagesAlert}
               />
             )}
           </Grid>
@@ -87,7 +129,7 @@ const AppLayout = () => (WrappedComponent) => {
             height="100%"
             overflow="hidden"
           >
-            <WrappedComponent {...props} />
+            <WrappedComponent {...props} chatId={chatId} user={user} />
           </Grid>
 
           {/* Third Section */}
@@ -104,7 +146,7 @@ const AppLayout = () => (WrappedComponent) => {
             }}
             overflow="hidden"
           >
-            <Profile user = {user} />
+            <Profile user={user} />
           </Grid>
         </Grid>
       </>

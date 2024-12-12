@@ -12,7 +12,7 @@ function Chatlist({
     newMessagesAlert = [
       {
         chatId: "",
-        count: 1,
+        count: 0,
       },
     ], handleDeleteChat,
   }) {
