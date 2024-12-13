@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userNotExists } from "../../redux/reducers/auth.js";
 import {
   setIsMobileMenu,
+  setIsNewGrp,
   setIsNotification,
   setIsSearch,
 } from "../../redux/reducers/extra.js";
@@ -39,11 +40,10 @@ function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isSearch, isNotification } = useSelector((state) => state.extra);
+  const { isSearch, isNotification ,isNewGrp} = useSelector((state) => state.extra);
 
   const { notificationCnt } = useSelector((state) => state.chat);
 
-  const [isGroup, setIsGroup] = useState(false);
 
   const handleMobile = () => {
     dispatch(setIsMobileMenu(true));
@@ -55,7 +55,7 @@ function Header() {
   };
 
   const openNewGroup = () => {
-    setIsGroup((prev) => !prev);
+    dispatch(setIsNewGrp(true));
   };
   const openNotification = () => {
     dispatch(setIsNotification(true));
@@ -150,7 +150,7 @@ function Header() {
           <SearchDialog />
         </Suspense>
       )}
-      {isGroup && (
+      {isNewGrp && (
         <Suspense fallback={<Backdrop open />}>
           <NewGroupDialog />
         </Suspense>
