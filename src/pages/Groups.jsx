@@ -27,9 +27,11 @@ import { Link } from "../components/Styles/StyledComponents";
 import AvatarCard from "../components/shared/AvatarCard";
 import { sampleChats, sampleUsers } from "../constants/sampleData";
 import UserItem from "../components/shared/UserItem";
-import { useChatDetailsQuery, useMyGroupsQuery } from "../redux/api/api";
-import { useErrors } from "../hooks/hook";
+import { useAddGrpMembersMutation, useChatDetailsQuery, useMyGroupsQuery, useRemoveGrpMemberMutation, useRenameGrpMutation } from "../redux/api/api";
+import { useAsyncMutation, useErrors } from "../hooks/hook";
 import { LayoutLoader } from "../components/layout/Loaders";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsAddMember } from "../redux/reducers/extra";
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDialog")
 );
@@ -37,15 +39,18 @@ const AddMemberDialog = lazy(() =>
   import("../components/dialogs/AddMemberDialog")
 );
 
-const isAddMember = false;
+// const isAddMember = false;g
 
 function Groups() {
   const chatId = useSearchParams()[0].get("group");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {isAddmemb} = useSelector((state) => state.extra);
 
   const myGroups = useMyGroupsQuery();
 
-  console.log(myGroups.data);
+  // console.log(myGroups.data);
 
   const groupDetails = useChatDetailsQuery(
     { chatId, populate: true },
@@ -55,6 +60,13 @@ function Groups() {
 
 
   // const members = groupDetails?.data?.chat?.members || [];
+
+  const [updateGroup, isLoadingGroupName] = useAsyncMutation(useRenameGrpMutation)
+
+  const [removeMember, isLoadingRemoveMember] = useAsyncMutation(useRemoveGrpMemberMutation)
+
+
+  
 
   const [isMobile, setIsMobile] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -78,7 +90,7 @@ function Groups() {
   useEffect(() => {
     if(groupDetails.data){
       setGrpName(groupDetails.data.chat.name);
-      setGrpNameUpdate(groupDetails.data.name);
+      setGrpNameUpdate(groupDetails.data.chat.name);
       setMembers(groupDetails.data.chat.members)
     }
 
@@ -106,11 +118,19 @@ function Groups() {
 
   const updateGrpNameHandler = () => {
     setIsEdit(false);
+    updateGroup( "Updating Group Name..." ,{name: grpNameUpdate, chatId})
   };
-  const addMemberHandler = () => {};
+
+
+  const addMemberHandler = () => {
+    dispatch(setIsAddMember(true));
+
+  };
+
   const openConfirmDeleteHandler = () => {
     setConfirmDelete(true);
   };
+
   const closeConfirmDeleteHandler = () => {
     setConfirmDelete(false);
   };
@@ -118,8 +138,9 @@ function Groups() {
     // closeConfirmDeleteHandler();
   };
 
-  const removeMemberHandler = (id) => {
-    console.log(id);
+  const removeMemberHandler = (userId) => {
+    removeMember("Removing Member...", {chatId, userId})
+    // console.log(id);
   };
 
   useEffect(() => {
@@ -186,14 +207,16 @@ function Groups() {
             value={grpNameUpdate}
             onChange={(e) => setGrpNameUpdate(e.target.value)}
           />
-          <IconButton onClick={updateGrpNameHandler}>
+          <IconButton onClick={updateGrpNameHandler}
+            disabled={isLoadingGroupName}>
             <DoneIcon />
           </IconButton>
         </>
       ) : (
         <>
           <Typography variant={"h4"}>{grpName}</Typography>
-          <IconButton onClick={() => setIsEdit(true)}>
+          <IconButton onClick={() => setIsEdit(true)}
+           disabled={isLoadingGroupName}>
             <EditIcon />
           </IconButton>
         </>
@@ -298,9 +321,9 @@ function Groups() {
           </>
         )}
       </Grid>
-      {isAddMember && (
+      {isAddmemb && (
         <Suspense fallback={<Backdrop open />}>
-          <AddMemberDialog />
+          <AddMemberDialog chatId={chatId}/>
         </Suspense>
       )}
 

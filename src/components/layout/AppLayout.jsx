@@ -5,7 +5,7 @@ import Title from "../shared/Title";
 import { Drawer, Grid, Skeleton } from "@mui/material";
 import Chatlist from "../specific/Chatlist";
 import { sampleChats } from "../../constants/sampleData";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Profile from "../specific/Profile";
 import { useMyChatsQuery } from "../../redux/api/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +16,7 @@ import {
   NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
   NEW_REQUEST,
+  REFETCH_CHATS,
 } from "../../constants/events";
 import {
   incrementNotificationCnt,
@@ -28,6 +29,8 @@ const AppLayout = () => (WrappedComponent) => {
     const params = useParams();
     const chatId = params.chatId;
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
 
     const socket = getSocket();
     // console.log(socket.id);
@@ -37,7 +40,7 @@ const AppLayout = () => (WrappedComponent) => {
 
     const { newMessagesAlert } = useSelector((state) => state.chat);
 
-    const { isLoading, data, isError, error } = useMyChatsQuery();
+    const { isLoading, data, isError, error,refetch } = useMyChatsQuery();
 
     useErrors([{ isError, error }]);
 
@@ -71,9 +74,15 @@ const AppLayout = () => (WrappedComponent) => {
       dispatch(incrementNotificationCnt());
     }, [dispatch]);
 
+    const refetchListener = useCallback(() => {
+      refetch();
+      navigate("/");
+    }, [refetch, navigate]);
+
     const eventHanlders = {
       [NEW_MESSAGE_ALERT]: newMessageAlertHandler,
       [NEW_REQUEST]: newRequestHandler,
+      [REFETCH_CHATS]: refetchListener,
     };
     useSocketEvents(socket, eventHanlders);
 
