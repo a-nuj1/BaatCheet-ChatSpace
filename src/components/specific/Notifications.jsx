@@ -9,15 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import React, { memo } from "react";
-import { sampleNotifications } from "../../constants/sampleData";
+import { useDispatch, useSelector } from "react-redux";
+import { useAsyncMutation, useErrors } from "../../hooks/hook";
 import {
   useAcceptFriendRequestMutation,
   useGetNotificationsQuery,
 } from "../../redux/api/api";
-import { useErrors } from "../../hooks/hook";
-import { useDispatch, useSelector } from "react-redux";
 import { setIsNotification } from "../../redux/reducers/extra";
-import toast from "react-hot-toast";
 
 function Notifications() {
   const { isNotification } = useSelector((state) => state.extra);
@@ -25,23 +23,26 @@ function Notifications() {
   const dispatch = useDispatch();
   const { isLoading, data, error, isError } = useGetNotificationsQuery();
 
-  const [acceptRequest] = useAcceptFriendRequestMutation();
+  const [acceptRequest] = useAsyncMutation(useAcceptFriendRequestMutation);
 
   const friendRequestHandler = async (_id, accept) => {
     dispatch(setIsNotification(false));
-    try {
-      const res = await acceptRequest({ requestId: _id, accept });
 
-      if (res.data?.success) {
-        console.log("Request Accepted || USe Socket Here");
-        toast.success(res.data.message);
-      } else {
-        toast.error(res.data?.error || "Something went wrong");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong");
-    }
+    await await acceptRequest("Accepting...", { requestId: _id, accept });
+
+    // try {
+    //   const res = await acceptRequest({ requestId: _id, accept });
+
+    //   if (res.data?.success) {
+    //     console.log("Request Accepted || USe Socket Here");
+    //     toast.success(res.data.message);
+    //   } else {
+    //     toast.error(res.data?.error || "Something went wrong");
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.error("Something went wrong");
+    // }
   };
 
   const closeHandler = () => {
@@ -123,8 +124,6 @@ const NotificationItem = memo(({ sender, _id, handler }) => {
           <Button onClick={() => handler(_id, false)} color="error">
             Reject
           </Button>
-
-
         </Stack>
       </Stack>
     </ListItem>

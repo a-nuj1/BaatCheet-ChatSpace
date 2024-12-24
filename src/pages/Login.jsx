@@ -26,6 +26,8 @@ import toast from "react-hot-toast";
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
   const name = useInputValidation("");
   const bio = useInputValidation("");
   const username = useInputValidation("", usernameValidator);
@@ -45,6 +47,9 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    const toastId = toast.loading("Logging in...");
+    
+    setIsLoading(true);
     const config = {
       withCredentials: true,
       headers: {
@@ -62,9 +67,11 @@ function Login() {
         config
       );
       dispatch(userExists(data.user));
-      toast.success(data.message);
+      toast.success(data.message,{id:toastId});
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Something went wrong");
+      toast.error(err?.response?.data?.message || "Something went wrong",{id:toastId});
+    }finally{
+      setIsLoading(false);
     }
 
     // console.log("login", username.value, password.value);
@@ -72,6 +79,9 @@ function Login() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Signing up...");
+
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("name", name.value);
     formData.append("bio", bio.value);
@@ -87,11 +97,14 @@ function Login() {
         },
       });
       
-      dispatch(userExists(true))
-      toast.success(data.message );
+      dispatch(userExists(data.user));
+      toast.success(data.message ,{id:toastId});
   
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something went wrong",{id:toastId});
+    }
+    finally{
+      setIsLoading(false);
     }
   };
 
@@ -184,6 +197,7 @@ function Login() {
                   variant="contained"
                   color="primary"
                   type="submit"
+                  disabled={isLoading}
                 >
                   Sign in
                 </Button>
@@ -195,6 +209,7 @@ function Login() {
                   Don't have any account ?
                 </Typography>
                 <Button
+                  disabled={isLoading}
                   sx={{
                     width: "60%",
                   }}
@@ -333,6 +348,7 @@ function Login() {
                   variant="contained"
                   color="primary"
                   type="submit"
+                  disabled={isLoading}
                   // fullWidth
                 >
                   Sign Up
@@ -345,6 +361,7 @@ function Login() {
                   Already have an account ?
                 </Typography>
                 <Button
+                  disabled={isLoading}
                   sx={{
                     width: "60%",
                   }}

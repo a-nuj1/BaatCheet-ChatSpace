@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useInputValidation } from "6pp";
 import {
   Button,
@@ -12,18 +12,28 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { bgColrGrad } from "../../constants/colors";
 import { Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { adminLogin, getAdmin } from "../../redux/thunks/admin";
 
-const isAdmin = true;
+
 
 function AdminLogin() {
+
+  const {isAdmin} = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   const secertKey = useInputValidation("");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
 
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log("submit");
+    dispatch(adminLogin(secertKey.value));
   };
+
+  useEffect(()=>{
+    dispatch(getAdmin())
+  },[dispatch]);
 
 
   if(isAdmin)return <Navigate to="/admin/dashboard" />;

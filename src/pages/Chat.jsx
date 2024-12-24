@@ -12,6 +12,8 @@ import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import {
   ALERT,
+  CHAT_JOINED,
+  CHAT_LEFT,
   NEW_MESSAGE,
   START_TYPING,
   STOP_TYPING,
@@ -102,6 +104,8 @@ function Chat({ chatId, user }) {
   };
 
   useEffect(() => {
+    socket.emit(CHAT_JOINED, {userId: user._id, members});
+
     dispatch(removeNewMessagesAlert(chatId));
 
     return () => {
@@ -109,6 +113,7 @@ function Chat({ chatId, user }) {
       setOldMessages([]);
       setMessages([]);
       setPage(1);
+      socket.emit(CHAT_LEFT, {userId: user._id, members});
     };
   }, [chatId]);
 
@@ -117,10 +122,15 @@ function Chat({ chatId, user }) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    if(!chatDetails.data?.chat)return navigate("/")
-  },[chatDetails.data]);
+  // useEffect(() => {
+  //   if(!chatDetails.data?.chat)return navigate("/")
+  // },[chatDetails.data]);
 
+  useEffect(()=>{
+    if(chatDetails.isError)return navigate("/")
+  },[chatDetails.isError])
+ 
+  
 
   const startTypingListener = useCallback(
     (data) => {
@@ -148,9 +158,10 @@ function Chat({ chatId, user }) {
   );
 
   const alertListner = useCallback(
-    (content) => {
+    (data) => {
+      if(data.chatId !== chatId) return;
       const messaegForAlert = {
-        content,
+        content:data.message,
         sender: {
           _id: "abfdgdsdfds",
           name: "admin",
