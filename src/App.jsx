@@ -1,15 +1,15 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";
 import {server} from "./constants/config"
 import { useDispatch, useSelector } from "react-redux";
-
 import {Toaster} from "react-hot-toast"
 import ProtectRoute from "./components/auth/ProtectRoute";
 import { LayoutLoader } from "./components/layout/Loaders";
 import { userExists, userNotExists } from "./redux/reducers/auth";
 import { SocketProvider } from "./socket";
 import InstantLoad from "./pages/InstantLoad";
+
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -26,28 +26,31 @@ const MessageManagement = lazy(()=>import("./pages/admin/MessageManagement"))
 function App() {
   const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  const [authChecked, setAuthChecked] = useState(false); 
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     axios.get(`${server}/api/v1/user/profile`, {
       withCredentials: true
     })
-    .then(({ data }) => dispatch(userExists(data.user)))
+    .then(({ data }) => {
+      dispatch(userExists(data.user));
+    })
     .catch(() => dispatch(userNotExists()))
-    .finally(() => setAuthChecked(true)); 
+    .finally(() => setAuthChecked(true));
   }, [dispatch]);
-
-
 
   return (
     <Router>
       <Suspense fallback={<LayoutLoader/>}>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={
+            user ? <Navigate to="/" /> : <Login />
+          } />
           <Route path="/admin" element={<AdminLogin />} />
           
           {!authChecked && <Route path="/" element={<InstantLoad />} />}
           
+          {/* PROTECTED ROUTES - Only show after auth check */}
           {authChecked && (
             <Route element={
               <SocketProvider>
