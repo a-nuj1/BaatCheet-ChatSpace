@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import axios from "axios";
 import {server} from "./constants/config"
@@ -9,6 +9,7 @@ import ProtectRoute from "./components/auth/ProtectRoute";
 import { LayoutLoader } from "./components/layout/Loaders";
 import { userExists, userNotExists } from "./redux/reducers/auth";
 import { SocketProvider } from "./socket";
+import InstantLoad from "./pages/InstantLoad";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -23,60 +24,56 @@ const MessageManagement = lazy(()=>import("./pages/admin/MessageManagement"))
 
 
 function App() {
-  const {user, loader} = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  const [authChecked, setAuthChecked] = useState(false); 
 
-  useEffect(()=>{
-    axios.get(`${server}/api/v1/user/profile`,{
-      withCredentials:true
+  useEffect(() => {
+    axios.get(`${server}/api/v1/user/profile`, {
+      withCredentials: true
     })
-    .then(({data}) => dispatch(userExists(data.user)) )
-    .catch((err) => dispatch(userNotExists()));
-  }, [dispatch])
+    .then(({ data }) => dispatch(userExists(data.user)))
+    .catch(() => dispatch(userNotExists()))
+    .finally(() => setAuthChecked(true)); 
+  }, [dispatch]);
 
 
 
-
-  return loader 
-  ? 
-  (<LayoutLoader></LayoutLoader>) 
-  :
-  (
+  return (
     <Router>
       <Suspense fallback={<LayoutLoader/>}>
         <Routes>
-          {/* importing socket provider helps to provide the socket to the below 3 routes  */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<AdminLogin />} />
           
-          <Route element={<SocketProvider>
-            <ProtectRoute user={user} />
-          </SocketProvider>}>
-            <Route path="/" element={<Home />} />
-            <Route path="/chat/:chatId" element={<Chat />} />
-            <Route path="/groups" element={<Groups />} />
-          </Route>
-
-          <Route
-            path="/login"
-            element={
-              <ProtectRoute user={!user} redirect="/">
-                <Login />
-              </ProtectRoute>
-            }
-          />
-
-          <Route path = '/admin' element = {<AdminLogin />}/>
-          <Route path = '/admin/dashboard' element = {<Dashboard />}/>
+          {!authChecked && <Route path="/" element={<InstantLoad />} />}
           
-          <Route path="/admin/users" element={<UserManagement/>}/>
+          {authChecked && (
+            <Route element={
+              <SocketProvider>
+                <ProtectRoute user={user} />
+              </SocketProvider>
+            }>
+              <Route path="/" element={<Home />} />
+              <Route path="/chat/:chatId" element={<Chat />} />
+              <Route path="/groups" element={<Groups />} />
+            </Route>
+          )}
 
-          <Route path="/admin/chats" element={<ChatManagement/>}/>
-          <Route path="/admin/messages" element={<MessageManagement/>}/>
+          {/* ADMIN ROUTES */}
+          {authChecked && (
+            <>
+              <Route path="/admin/dashboard" element={<Dashboard />}/>
+              <Route path="/admin/users" element={<UserManagement/>}/>
+              <Route path="/admin/chats" element={<ChatManagement/>}/>
+              <Route path="/admin/messages" element={<MessageManagement/>}/>
+            </>
+          )}
 
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       <Toaster position="top-center" />
-
     </Router>
   );
 }
