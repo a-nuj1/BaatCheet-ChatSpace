@@ -36,24 +36,11 @@ const AppLayout = () => (WrappedComponent) => {
     const navigate = useNavigate();
 
     const delteMenuAnchor = useRef(null);
-
-
     const [onlineUsers, setOnlineUsers] = useState([]);
-
-
-
-
-
     const socket = getSocket();
-    // console.log(socket.id);
-
-
-
     const { isMobileMenu } = useSelector((state) => state.extra);
     const { user } = useSelector((state) => state.auth);
-
     const { newMessagesAlert } = useSelector((state) => state.chat);
-
     const { isLoading, data, isError, error, refetch } = useMyChatsQuery();
 
     useErrors([{ isError, error }]);
@@ -73,8 +60,6 @@ const AppLayout = () => (WrappedComponent) => {
       dispatch(setIsDeleteMenu(true));
       dispatch(setSelectedDelChats({ chatId, groupChat }));
       delteMenuAnchor.current = e.currentTarget;
-
-      // console.log("Deleted Chat", _id, groupChat);
     };
 
     const newMessageAlertHandler = useCallback(
@@ -96,9 +81,6 @@ const AppLayout = () => (WrappedComponent) => {
 
     const onlineUserListner = useCallback((data) => {
       setOnlineUsers(data);
-
-
-
     }, []);
 
     const eventHanlders = {
@@ -133,13 +115,16 @@ const AppLayout = () => (WrappedComponent) => {
         )}
 
         <Grid container height={"calc(100vh - 4rem)"} spacing={0}>
-          {/* First Section */}
+          {/* First Section - Chat List */}
           <Grid
             item
             xs={0}
             sm={4}
             md={3}
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ 
+              display: { xs: "none", sm: "block" },
+              borderRight: "1px solid rgba(0, 0, 0, 0.12)" // Added border here
+            }}
             height="100%"
             overflow="hidden"
           >
@@ -156,7 +141,7 @@ const AppLayout = () => (WrappedComponent) => {
             )}
           </Grid>
 
-          {/* Second Section (Main Content) */}
+          {/* Second Section - Main Content */}
           <Grid
             item
             xs={12}
@@ -169,7 +154,7 @@ const AppLayout = () => (WrappedComponent) => {
             <WrappedComponent {...props} chatId={chatId} user={user} />
           </Grid>
 
-          {/* Third Section */}
+          {/* Third Section - Profile */}
           <Grid
             item
             xs={0}
